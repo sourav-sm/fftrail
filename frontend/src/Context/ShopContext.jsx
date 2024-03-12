@@ -129,14 +129,14 @@ const ShopContextProvider = (props) =>{
         const [cartItems,setCartItems]=useState(getDefaultCart());
         
         useEffect(()=>{
-             fetch('http://localhost:4000/allproducts')
-            //fetch('https://backend3-j9x6.onrender.com/allproducts')
+             //fetch('http://localhost:4000/allproducts')
+            fetch('https://fftrail.onrender.com/allproducts')
             .then((response)=>response.json())
             .then((data)=>setAll_Product(data))
 
             if(localStorage.getItem('auth-token')){
-               fetch('http://localhost:4000/getcart',{
-               // fetch('https://backend3-j9x6.onrender.com/getcart',{
+               //fetch('http://localhost:4000/getcart',{
+                fetch('https://fftrail.onrender.com/getcart',{
                     method:'POST',
                     headers:{
                         Accept:'application/form-data',
@@ -152,8 +152,8 @@ const ShopContextProvider = (props) =>{
         const addToCart=(itemId)=>{
             setCartItems((prev)=>({...prev,[itemId]:prev[itemId]+1}))
             if(localStorage.getItem('auth-token')){
-                 fetch('http://localhost:4000/addtocart',{
-                //fetch('https://backend3-j9x6.onrender.com/addtocart',{
+                 //fetch('http://localhost:4000/addtocart',{
+                fetch('https://fftrail.onrender.com/addtocart',{
                     method:'POST',
                     headers:{
                         Accept:'application/form-data',
@@ -170,8 +170,8 @@ const ShopContextProvider = (props) =>{
         const removeFromCart=(itemId)=>{
             setCartItems((prev)=>({...prev,[itemId]:prev[itemId]-1}))
             if(localStorage.getItem('auth-token')){
-                 fetch('http://localhost:4000/removefromcart',{
-                //fetch('https://backend3-j9x6.onrender.com/removefromcart',{
+                 //fetch('http://localhost:4000/removefromcart',{
+                fetch('https://fftrail.onrender.com/removefromcart',{
                     method:'POST',
                     headers:{
                         Accept:'application/form-data',
@@ -221,7 +221,8 @@ const ShopContextProvider = (props) =>{
                 "Content-Type":"application/json"
               }
           
-              return fetch(`http://localhost:4000/payment`,{
+            //   return fetch(`http://localhost:4000/payment`,{
+                return fetch(`https://fftrail.onrender.com/payment`,{
                 method:"POST",
                 headers,
                 body:JSON.stringify(body)
