@@ -372,21 +372,28 @@ const cors=require("cors");//accecss to react project
 require('dotenv').config();
 // const { error, log } = require("console");
 
+//payment
+//const apiKey="sk_test_51OpVHpSIyGZ3BZDjIlASplaGias67Ha2kFvLUs4Qi6zuVF7Glsc04ZppOlzoIUaY7d0QVdWiWVcliMTjQj9i9pxF00YaHPBYqe"
+const apiKey=process.env.api_key
+const stripe=require ("stripe")({apiKey})
+const { v4: uuidv4 } = require("uuid");
+require('dotenv').config();
+
 
 app.use(express.json());
 app.use(cors());
 
 //Database connection with mongodb
-// mongoose.connect(process.env.DATABASE,{
-//    // useNewUrlParser: true,//This option is important for future compatibility. MongoDB made changes to the connection string parser to address certain issues and improve performance. While older versions of MongoDB allowed for connection strings without specifying this option, newer versions require it. Including this option ensures that Mongoose uses the latest URL parser, preventing any potential parsing errors and future deprecation warnings.
-//     //useUnifiedTopology: true//This option is essential for the proper functioning and efficiency of the MongoDB Node.js driver. It enables the use of the new Server Discovery and Monitoring engine, which improves the reliability and performance of the driver. It's especially important as MongoDB deprecates the legacy topology engine. Including this option ensures that Mongoose uses the recommended server discovery and monitoring mechanism, avoiding deprecation warnings and ensuring compatibility with future MongoDB versions.
-// })
-// .then(() => console.log("MongoDB connected successfully"))
-// .catch(err => console.error("MongoDB connection error:", err));
+mongoose.connect(process.env.MONGODB,{
+   // useNewUrlParser: true,//This option is important for future compatibility. MongoDB made changes to the connection string parser to address certain issues and improve performance. While older versions of MongoDB allowed for connection strings without specifying this option, newer versions require it. Including this option ensures that Mongoose uses the latest URL parser, preventing any potential parsing errors and future deprecation warnings.
+    //useUnifiedTopology: true//This option is essential for the proper functioning and efficiency of the MongoDB Node.js driver. It enables the use of the new Server Discovery and Monitoring engine, which improves the reliability and performance of the driver. It's especially important as MongoDB deprecates the legacy topology engine. Including this option ensures that Mongoose uses the recommended server discovery and monitoring mechanism, avoiding deprecation warnings and ensuring compatibility with future MongoDB versions.
+})
+.then(() => console.log("MongoDB connected successfully"))
+.catch(err => console.error("MongoDB connection error:", err));
 
-mongoose.connect("mongodb+srv://developersourav135:44281219@cluster0.cim5m44.mongodb.net/e-commerce")
-.then(()=>console.log("mongodb connected successfully"))
-.catch(err=>console.log("error",err))
+// mongoose.connect("mongodb+srv://developersourav135:44281219@cluster0.cim5m44.mongodb.net/e-commerce")
+// .then(()=>console.log("mongodb connected successfully"))
+// .catch(err=>console.log("error",err))
 
 //API CREATION
 app.get("/",(req,res)=>{
@@ -640,6 +647,36 @@ app.post('/getcart',fetchUser,async(req,res)=>{
     let userData = await Users.findOne({_id:req.user.id});
     res.json(userData.cartData);
 })
+
+//payment
+app.post("/payment",(req,res)=>{
+    const{product,token}=req.body;
+    console.log("products",product);
+    console.log("price",product.price);
+    const idempontencykey=uuidv4();
+
+    return stripe.customers.create({
+        email:token.email,
+        source:token.id
+    }).then(customer=>{
+        stripe.charges.create({
+            amount:product.price*100,
+            currency:'usd',
+            customer:customer.id,
+            receipt_email:token.email,
+            description:`purchase of product.name`,
+            shipping:{
+                name:token.card.name,
+                address:{
+                    country:token.card.address_country
+                }
+            }
+        },{idempontencykey})
+    })
+    .then(result=>res.status(200).json(result))
+    .then(err=>console.log(err))
+})
+
 
 app.listen(PORT,(error)=>{
     if(!error){

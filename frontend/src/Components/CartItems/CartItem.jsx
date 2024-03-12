@@ -112,9 +112,36 @@ import React, { useContext } from "react";
 import  './CartItems.css'
 import { ShopContext } from "../../Context/ShopContext";
 import remove_icon from '../Assets/cart_cross_icon.png'
+import StripeCheckout from 'react-stripe-checkout'
+//const apiKey="pk_test_51OpVHpSIyGZ3BZDjKKoAKQ8IZJbLm3xLxkUrMtkuvx4LCCKTcuXeNS42JWaVkgn3RJSJQAlHP8C0x9uD52PODDg500picRPBvt"
+const apiKey=import.meta.env.VITE_API_KEY
 
 const CartItems= ()=>{
-    const {getTotalCartAmount,all_product,cartItems,removeFromCart}=useContext(ShopContext);
+    const {getTotalCartAmount,all_product,cartItems,removeFromCart,makePayment}=useContext(ShopContext);
+    
+//     const makePayment = token=>{
+//       const body={
+//         token,
+//         cartItems
+//       }
+//       const headers={
+//         "Content-Type":"application/json"
+//       }
+  
+//       return fetch(`http://localhost:4000/payment`,{
+//         method:"POST",
+//         headers,
+//         body:JSON.stringify(body)
+//       })
+//       .then(response=>{
+//         console.log("RESPONSE",response)
+//         const {status}=response
+//         console.log("Status",status);
+//       })
+//       .catch(error=>console.log(error))
+//     }
+    
+    
     return (
         <div className="cartitems">
            <div className="cartitems-format-main">
@@ -161,7 +188,17 @@ const CartItems= ()=>{
                         <h3>${getTotalCartAmount()}</h3>
                     </div>
                 </div>
-                <button>PROCEED TO PAYMENT</button>
+                     <StripeCheckout 
+                         stripeKey={apiKey}
+                         token={makePayment}
+                         name="coplete payment"
+                         amount={getTotalCartAmount()*100}
+                         shippingAddress
+                         billingAddress
+                         >
+                   <button>PROCEED TO PAYMENT</button>
+                 </StripeCheckout>
+                         {/* <button>PROCEED TO PAYMENT</button> */}
             </div>
             <div className="cartitems-promocode">
                 <p>If you have any promo code, Enter it here</p>

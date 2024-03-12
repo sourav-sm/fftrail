@@ -208,9 +208,34 @@ const ShopContextProvider = (props) =>{
             }
             return totalItem;
         }
-
+       
+    
+            //const {getTotalCartAmount,all_product,cartItems,removeFromCart}=useContext(ShopContext);
+            
+            const makePayment = token=>{
+              const body={
+                token,
+                cartItems
+              }
+              const headers={
+                "Content-Type":"application/json"
+              }
+          
+              return fetch(`http://localhost:4000/payment`,{
+                method:"POST",
+                headers,
+                body:JSON.stringify(body)
+              })
+              .then(response=>{
+                console.log("RESPONSE",response)
+                const {status}=response
+                console.log("Status",status);
+              })
+              .catch(error=>console.log(error))
+            }
+   
         //sending value of throw context api
-        const contextValue = {getTotalCartItems,getTotalCartAmount,all_product,cartItems,addToCart,removeFromCart};
+        const contextValue = {getTotalCartItems,getTotalCartAmount,all_product,cartItems,addToCart,removeFromCart,makePayment};
 
     return (
         <ShopContext.Provider value={contextValue}>
